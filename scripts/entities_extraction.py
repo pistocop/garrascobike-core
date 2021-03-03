@@ -1,23 +1,16 @@
+# noinspection PyUnresolvedReferences
+import __init__  # used to import from `garrascobike`
 import sys
 import typer
-import spacy
-import numpy as np
 import pandas as pd
-from tqdm import tqdm
 
 from typer import Option
-from typing import List, Optional
 from loguru import logger
+from typing import List, Optional
+from codetiming import Timer
 
-
-def init(es_endpoint: str, debug: bool):
-    if not debug:
-        logger.remove()
-        logger.add(sys.stderr, level="INFO")
-    if es_endpoint:
-        logger.debug(f"Elasticsearch endpoint provided: `{es_endpoint}`, opening connection")
-        logger.error("Currently, the es upload is not supported. Program will exit now.")
-        exit(1)
+from data_manager import DataManager, basic_text_cleaning
+from spacy_manager import SupportedLanguages, SpacyManager
 
 
 def create_es_actions(df: pd.DataFrame,
@@ -46,39 +39,37 @@ def create_es_actions(df: pd.DataFrame,
 
 def extract(csv_path: str = Option("./data/submissions.csv", help="Path to the csv"),
             text_columns: List[str] = Option(["title", "selftext"], help="Columns name with text to analyze"),
+            use_transformers: bool = Option(False, help="Use heavy but good ML models"),
+            use_gpu: bool = Option(False, help="Enable if a GPU is available"),
+            language: SupportedLanguages = Option(SupportedLanguages.en, help="Language of the text to analyze"),
             es_index: str = Option(""),
             es_endpoint: Optional[str] = Option(None, help="If provided, load the data on the elasticsearch endpoint"),
             debug: bool = Option(False, help="Show debug logs"),
             ):
-    # Read the data
-    init(es_endpoint, debug)
-    df_raw = pd.read_csv(csv_path)
+    if not debug:
+        logger.remove()
+        logger.add(sys.stderr, level="INFO")
+    logger.info("Data management starting...")
 
-    # Parse the data
-    df_raw_len = len(df_raw)
-    df_raw["__text__"] = ""
+    dm = DataManager(csv_path)
+    logger.debug(f"Loaded {dm.df_len} rows from dataset at `{csv_path}`!")
 
-    # join all columns text
-    for column in text_columns:
-        df_raw["__text__"] += df_raw[column].replace(np.nan, ' ') + " "
+    dm.join_columns(text_columns)
+    logger.debug(f"Columns `{text_columns}` joined under `{dm.__text__}` column")
 
-    # remove all `__text__` empty rows
-    df = df_raw[df_raw["__text__"].str.strip().str.len() > 0]
-    df_len = len(df)
-    if df_len < df_raw_len:
-        logger.debug(f"Dataframe reduced from {df_raw_len} to {df_len}")
+    dm.text_parsing(basic_text_cleaning)
+    logger.debug(f"Text cleaned using `{basic_text_cleaning}`")
 
-    logger.debug("Start text parsing...")
-    df["__text__"] = df["__text__"].apply(text_cleaning)
-    logger.debug("Text parsing done!")
+    dm.remove_empty_rows()
+    logger.debug(f"Rows cleaned, new size: {dm.df_len}")
 
-    # Start the extraction
-    spacy.prefer_gpu()
-    logger.info(f"Starting the extraction of {df_len} rows")
-    df["entities"] = df["__text__"].progress_apply(entities_extractor)
-    df = df.drop(columns=["tmp_text"])
+    mlm = SpacyManager(language, use_transformers, use_gpu)
+    logger.debug(f"Loaded model `{mlm.model_name}`, run on GPU:{use_gpu}")
 
-    # Store the data
+    dm.entities_extraction(mlm.extract_entities)
+    logger.debug(f"Rows cleaned, new size: {dm.df_len}")
+
+    logger.info("Data management completed!")
 
 
 if __name__ == '__main__':
