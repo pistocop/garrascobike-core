@@ -67,7 +67,7 @@ def extract(csv_path: str = Option("./data/submissions.csv", help="Path to the c
     logger.debug(f"Loaded model `{mlm.model_name}`, run on GPU:{use_gpu}")
 
     dm.entities_extraction(mlm.extract_entities)
-    logger.debug(f"Rows cleaned, new size: {dm.df_len}")
+    logger.debug(f"Entities extracted")
 
     logger.info("Data management completed!")
 

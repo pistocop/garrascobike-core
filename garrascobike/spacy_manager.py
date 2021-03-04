@@ -26,8 +26,8 @@ class SpacyManager:
                  use_transformers: False,
                  use_gpu: bool = False):
         """
-            Class to manage the spacy models,
-            expose simple API focused only on text extraction
+        Class to manage the spacy models,
+        expose simple API focused only on text extraction
 
         Args:
             language: the language of the text will be analyzed
@@ -54,8 +54,8 @@ class SpacyManager:
 
     @staticmethod
     def _extraction_parser(text_parsed) -> List[dict]:
-        entities = [{"text": text_parsed.text,
-                     "label": text_parsed.label_} for x in text_parsed.ents]
+        entities = [{"text": entity.text,
+                     "label": entity.label_} for entity in text_parsed.ents]
         return entities
 
     @staticmethod
