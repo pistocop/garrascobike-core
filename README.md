@@ -2,15 +2,17 @@
 
 > Core of the Garrascobike recommendation system
 
-# TODO
+# 💤 TODO
 
-- [ ] Use library for pandas CPU parallelism
 - [ ] Code refactory
+- [ ] Use library for pandas CPU parallelism
 - [ ] We should improve the text parsing?
     - Manage both parsing and entities extraction in one script could be a risk
-- [ ] How manage the possibility of have more than one ML model size.
-- [ ] Log if GPU is attached
-- 
+- [ ] How manage the connection between models and requirements.txt?
+- [ ] Support multiple languages
+    - [ ] We need to manage multiple installation for multiple models
+- [ x ] Log if GPU is attached
+- [ ] Log running stats
 
 # Links
 

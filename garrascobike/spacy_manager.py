@@ -1,8 +1,7 @@
+import spacy
+
 from enum import Enum
 from typing import List
-
-import spacy
-from loguru import logger
 from spacy import Language
 
 
@@ -22,8 +21,8 @@ class SpacyManager:
     }
 
     def __init__(self,
-                 language: SupportedLanguages,
-                 use_transformers: False,
+                 language: SupportedLanguages = SupportedLanguages.en,
+                 use_transformers: bool = False,
                  use_gpu: bool = False):
         """
         Class to manage the spacy models,
@@ -42,9 +41,7 @@ class SpacyManager:
         self.model = self._model_load()
 
     def _model_load(self) -> Language:
-        logger.debug(f"Loading spacy model: `{self.model_name}`...")
         model = spacy.load(self.model_name)
-        logger.debug(f"Spacy model: `{self.model_name}` loaded!")
         return model
 
     def extract_entities(self, text: str) -> List[dict]:
