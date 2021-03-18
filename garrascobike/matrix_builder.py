@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch
 
 
 class ElasticManager:
+    # TODO move: why `ElasticManager` declared inside a `matrix_builder.py`?
     def __init__(self,
                  es_host: str,
                  es_port: str,

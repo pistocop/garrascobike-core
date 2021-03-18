@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+
+from abc import ABC
 from typing import List, Callable
 from loguru import logger
 from tqdm import tqdm
@@ -70,7 +72,14 @@ class DataManager:
             return self.df.drop(columns=[self.__text__])
         return self.df
 
+    def store_dataframe(self, path: str, out_format: str = "parquet"):
+        if out_format != "parquet":
+            # Use visitors pattern if more than parquet format will be required
+            raise NotImplementedError("Only `parquet` export format supported")
+        self.df.to_parquet(path)
+
 
 def basic_text_cleaning(text: str) -> str:
+    # TODO move to another dedicated module
     text = text.replace("\\n", "")
     return text

@@ -1,24 +1,37 @@
 # noinspection PyUnresolvedReferences
+from os.path import join
+
 import __init__  # used to import from `garrascobike`
 import sys
 import typer
-import pandas as pd
 
 from typer import Option
 from loguru import logger
-from typing import List, Optional
-from codetiming import Timer
+from typing import List
 
-from data_manager import DataManager, basic_text_cleaning
-from spacy_manager import SupportedLanguages, SpacyManager
+from data_manager import DataManager
+from data_manager import basic_text_cleaning
+from spacy_manager import SupportedLanguages
+from spacy_manager import SpacyManager
 
 
-def extract(csv_path: str = Option("./data/data.csv", help="Path to the csv"),
-            text_columns: List[str] = Option(["title", "selftext"], help="Columns name with text to analyze"),
-            use_transformers: bool = Option(False, help="Use heavy but good ML models"),
-            use_gpu: bool = Option(False, help="Enable if a GPU is available"),
-            language: SupportedLanguages = Option("en", help="Language of the text to analyze"),
-            debug: bool = Option(False, help="Show debug logs"),
+class HelpMsg:
+    csv_path = "Path to the csv"
+    text_columns = "Columns name with text to analyze"
+    use_transformers = "Use heavy but good ML models"
+    output_directory = "Path where store the `extraction.parquet` file"
+    use_gpu = "Enable if a GPU is available"
+    language = "Language of the text to analyze"
+    debug = "Show debug logs"
+
+
+def extract(csv_path: str = Option("./data/data.csv", help=HelpMsg.csv_path),
+            text_columns: List[str] = Option(["title", "selftext"], help=HelpMsg.text_columns),
+            use_transformers: bool = Option(False, help=HelpMsg.use_transformers),
+            output_directory: str = Option("./", help=HelpMsg.output_directory),
+            use_gpu: bool = Option(False, help=HelpMsg.use_gpu),
+            language: SupportedLanguages = Option("en", help=HelpMsg.language),
+            debug: bool = Option(False, help=HelpMsg.debug),
             ):
     if not debug:
         logger.remove()
@@ -27,6 +40,7 @@ def extract(csv_path: str = Option("./data/data.csv", help="Path to the csv"),
                  f"csv_path: `{csv_path}` - "
                  f"text_columns: `{text_columns}` - "
                  f"use_transformers: `{use_transformers}` - "
+                 f"output_directory: `{output_directory}` - "
                  f"use_gpu: `{use_gpu}` - "
                  f"language: `{language}` - ")
 
@@ -49,9 +63,11 @@ def extract(csv_path: str = Option("./data/data.csv", help="Path to the csv"),
     dm.entities_extraction(mlm.extract_entities)
     logger.debug(f"Entities extracted")
 
-    logger.info("Data extraction completed!")
+    out_file_path = join(output_directory, "extraction.parquet")
+    dm.store_dataframe(out_file_path)
+    logger.debug(f"Entities stored at `{out_file_path}`")
 
-    logger.info("")
+    logger.info("Data extraction completed!")
 
 
 if __name__ == '__main__':
