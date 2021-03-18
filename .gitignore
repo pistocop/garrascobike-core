@@ -972,5 +972,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Personal
 !data/.gitkeep
 data/*
+*.parquet
