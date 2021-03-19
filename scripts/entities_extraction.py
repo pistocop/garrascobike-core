@@ -1,5 +1,7 @@
 # noinspection PyUnresolvedReferences
+from datetime import datetime
 from os.path import join
+from pathlib import Path
 
 import __init__  # used to import from `garrascobike`
 import sys
@@ -28,7 +30,7 @@ class HelpMsg:
 def extract(csv_path: str = Option("./data/data.csv", help=HelpMsg.csv_path),
             text_columns: List[str] = Option(["title", "selftext"], help=HelpMsg.text_columns),
             use_transformers: bool = Option(False, help=HelpMsg.use_transformers),
-            output_directory: str = Option("./", help=HelpMsg.output_directory),
+            output_directory: str = Option("./data/", help=HelpMsg.output_directory),
             use_gpu: bool = Option(False, help=HelpMsg.use_gpu),
             language: SupportedLanguages = Option("en", help=HelpMsg.language),
             debug: bool = Option(False, help=HelpMsg.debug),
@@ -63,9 +65,8 @@ def extract(csv_path: str = Option("./data/data.csv", help=HelpMsg.csv_path),
     dm.entities_extraction(mlm.extract_entities)
     logger.debug(f"Entities extracted")
 
-    out_file_path = join(output_directory, "extraction.parquet")
-    dm.store_dataframe(out_file_path)
-    logger.debug(f"Entities stored at `{out_file_path}`")
+    output_file = dm.store_dataframe(output_directory)
+    logger.debug(f"Entities stored at `{output_file}`")
 
     logger.info("Data extraction completed!")
 

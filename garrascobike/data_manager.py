@@ -1,3 +1,7 @@
+from datetime import datetime
+from os.path import join
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -72,11 +76,19 @@ class DataManager:
             return self.df.drop(columns=[self.__text__])
         return self.df
 
-    def store_dataframe(self, path: str, out_format: str = "parquet"):
+    def store_dataframe(self, path: str, out_format: str = "parquet") -> str:
+        # TODO: code refactory
+        run_id = datetime.today().strftime('%Y%m%d%H%M%S')
+        runtime_dir = join(path, run_id)
+        Path(runtime_dir).mkdir(parents=True, exist_ok=True)
+
         if out_format != "parquet":
             # Use visitors pattern if more than parquet format will be required
             raise NotImplementedError("Only `parquet` export format supported")
-        self.df.to_parquet(path)
+
+        file_path = join(runtime_dir, "extraction.parquet")
+        self.df.to_parquet(file_path)
+        return file_path
 
 
 def basic_text_cleaning(text: str) -> str:
