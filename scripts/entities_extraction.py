@@ -1,9 +1,6 @@
 # noinspection PyUnresolvedReferences
-from datetime import datetime
-from os.path import join
-from pathlib import Path
-
 import __init__  # used to import from `garrascobike`
+
 import sys
 import typer
 

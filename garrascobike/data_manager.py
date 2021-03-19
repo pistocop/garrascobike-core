@@ -1,12 +1,13 @@
-from datetime import datetime
-from os.path import join
-from pathlib import Path
+import os
 
 import numpy as np
 import pandas as pd
 
-from abc import ABC
-from typing import List, Callable
+from datetime import datetime
+from os.path import join
+from pathlib import Path
+from typing import List
+from typing import Callable
 from loguru import logger
 from tqdm import tqdm
 
@@ -14,34 +15,92 @@ from tqdm import tqdm
 class DataManager:
 
     def __init__(self,
-                 csv_path: str,
+                 file_path: str,
                  working_col="__text__"):
         """
         Used to load, aggregate and parse the data.
-        Two usages:
+
+        **Note**: if you need to analyze multiple text columns separately, create
+        multiple DataManager: this class is not created for this use case
+
+        Two main usages:
             - pass `working_col` name of your text column to analyze
             - don't pass `working_col` but instead call `join_columns` to create
             one column with the join of text from other columns.
             In this way we analyze one text and optimize the entities' extraction process.
-            [!] Note: if you need to analyze multiple text columns separately, create
-            multiple DataManager: this class is not created for this use case
+
         Args:
-            csv_path:
+            file_path:
             working_col:
         """
         tqdm.pandas()
+        self.data_loaders: dict[str, Callable] = {"csv": self._load_csv,
+                                                  "parquet": self._load_parquet}
+
         self.__text__ = working_col
-        self.csv_path = csv_path
-        self.df = self._load_csv(csv_path)
+        self.file_path = file_path
+        self.df = self._load_dataframe(file_path)
         self.df[self.__text__] = ""
         self.df_len = len(self.df)
         self.columns_joined_flag = False
 
     @staticmethod
-    def _load_csv(csv_path: str) -> pd.DataFrame:
-        df = pd.read_csv(csv_path)
+    def _load_csv(file_path: str) -> pd.DataFrame:
+        df = pd.read_csv(file_path)
         return df
 
+    @staticmethod
+    def _load_parquet(file_path: str) -> pd.DataFrame:
+        df = pd.read_parquet(file_path)
+        return df
+
+    def _check_extension(self, extension: str):
+        supported_extensions = self.data_loaders.keys()
+        if extension not in supported_extensions:
+            # Use visitors pattern if more than parquet format will be required
+            raise NotImplementedError(f"Format `{extension}` not supported. "
+                                      f"Supported formats: [`{supported_extensions}`]")
+
+    # Dataset methods
+    def get_dataframe(self, delete_working_col: bool = True):
+        if delete_working_col:
+            return self.df.drop(columns=[self.__text__])
+        return self.df
+
+    def store_dataframe(self, path: str, out_extension: str = "parquet") -> str:
+        # TODO: code refactory
+        run_id = datetime.today().strftime('%Y%m%d%H%M%S')
+        runtime_dir = join(path, run_id)
+        Path(runtime_dir).mkdir(parents=True, exist_ok=True)
+
+        self._check_extension(out_extension)
+
+        # Currently only parquet is supported
+        file_path = join(runtime_dir, "extraction.parquet")
+        self.df.to_parquet(file_path)
+        return file_path
+
+    def _load_dataframe(self, file_path: str) -> pd.DataFrame:
+        """
+        Load data from different sources extensions.
+
+        Private method because user should use `get_dataframe` if want the df, that
+        method remove __text__ working column.
+
+        Args:
+            file_path: path to the file with the data
+
+        Returns:
+            Pandas dataframe with the data loaded
+        """
+        _, file_extension = os.path.splitext(file_path)
+        file_extension = file_extension[1:]  # remove starting `.`
+        self._check_extension(file_extension)
+        data_loader = self.data_loaders[file_extension]
+        df = data_loader(file_path)
+        return df
+
+    # Entities extraction methods
     def join_columns(self, columns_to_join: List[str]):
         """
         Used to join columns under one column named `working_col`.
@@ -56,6 +115,11 @@ class DataManager:
         self.columns_joined_flag = True
 
     def remove_empty_rows(self):
+        """
+        Remove empty rows of the __text__ column (the only important for this class)
+        Returns:
+            self.df reduced
+        """
         df = self.df
         __text__ = self.__text__
 
@@ -70,25 +134,6 @@ class DataManager:
 
     def entities_extraction(self, extraction_fn: Callable[[str], List[dict]]):
         self.df["entities"] = self.df[self.__text__].progress_apply(extraction_fn)
-
-    def get_dataframe(self, delete_working_col: True):
-        if delete_working_col:
-            return self.df.drop(columns=[self.__text__])
-        return self.df
-
-    def store_dataframe(self, path: str, out_format: str = "parquet") -> str:
-        # TODO: code refactory
-        run_id = datetime.today().strftime('%Y%m%d%H%M%S')
-        runtime_dir = join(path, run_id)
-        Path(runtime_dir).mkdir(parents=True, exist_ok=True)
-
-        if out_format != "parquet":
-            # Use visitors pattern if more than parquet format will be required
-            raise NotImplementedError("Only `parquet` export format supported")
-
-        file_path = join(runtime_dir, "extraction.parquet")
-        self.df.to_parquet(file_path)
-        return file_path
 
 
 def basic_text_cleaning(text: str) -> str:

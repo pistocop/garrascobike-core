@@ -5,8 +5,6 @@ from typing import List
 from loguru import logger
 from typer import Option
 
-from matrix_builder import ElasticManager
-
 
 def main(es_host: str = Option("localhost"),
          es_port: str = Option("9200"),
