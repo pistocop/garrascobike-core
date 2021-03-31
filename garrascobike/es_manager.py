@@ -1,10 +1,19 @@
 import json
 import pandas as pd
 
-from typing import List
+from typing import List, Optional
+from typing import TypedDict
 from loguru import logger
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
+
+
+class EsResults(TypedDict):
+    _scroll_id: str
+    took: int
+    timed_out: bool
+    _shards: dict
+    hits: dict
 
 
 class ElasticManager:
@@ -19,45 +28,12 @@ class ElasticManager:
         self.scroll_id = None
         self.es_connection = self._new_es_connection()
 
-    def _new_es_connection(self):
-        logger.debug(f"Opening new es connection to `{self.es_host}:{self.es_port}`")
-        es_connection = Elasticsearch(host=self.es_host,
-                                      port=self.es_port,
-                                      opaque_id=self.es_opaque_id)
-        return es_connection
-
-    def _scroll_other_data(self, es_scroll_time: str = "5m"):
-        res = self.es_connection.scroll(scroll_id=self.scroll_id,
-                                        scroll=es_scroll_time)
-        self._extract_scroll_id(res)
-        return res
-
     @staticmethod
     def _extract_scroll_id(res: dict) -> str:
         scroll_id = res.get("_scroll_id")
         if not scroll_id:
             raise RuntimeError(f"Scroll id not found - result data: {type(res)} - `{res}`")
         return scroll_id
-
-    def search(self,
-               es_index: str,
-               es_search_size: int,
-               es_search_body: str,
-               es_source_list: List[str] = None,
-               es_scroll_time: str = "5m"
-               ):
-        # TODO set return type
-        if self.scroll_id:
-            return self._scroll_other_data(es_scroll_time)
-
-        res = self.es_connection.search(index=es_index,
-                                        body=es_search_body,
-                                        _source=es_source_list,
-                                        size=es_search_size,
-                                        scroll=es_scroll_time)
-
-        self.scroll_id = self._extract_scroll_id(res)
-        return res
 
     @staticmethod
     def create_es_actions_from_dataframe(df: pd.DataFrame, es_index: str = "my-index") -> List[dict]:
@@ -120,6 +96,78 @@ class ElasticManager:
                 f.write("\n")
                 f.write(json.dumps(data_line))
                 f.write("\n")
+
+    @staticmethod
+    def extract_search_data(es_results: EsResults) -> List[dict]:
+        search_data: List[dict] = []
+        for res in es_results["hits"]["hits"]:
+            search_data.append(res["_source"])
+        return search_data
+
+    def _new_es_connection(self):
+        logger.debug(f"Opening new es connection to `{self.es_host}:{self.es_port}`")
+        es_connection = Elasticsearch(host=self.es_host,
+                                      port=self.es_port,
+                                      opaque_id=self.es_opaque_id)
+        return es_connection
+
+    def _scroll_other_data(self,
+                           es_scroll_time: str = "5m"
+                           ) -> EsResults:
+        res = self.es_connection.scroll(scroll_id=self.scroll_id,
+                                        scroll=es_scroll_time)
+        self._extract_scroll_id(res)
+        return res
+
+    def new_search(self,
+                   es_index: str,
+                   es_search_body: str,
+                   es_search_size: int,
+                   es_source_list: List[str] = None,
+                   es_scroll_time: str = "5m"
+                   ) -> Optional[EsResults]:
+        # TODO documentation
+        if self.scroll_id:
+            logger.debug(f"Overwriting last search, removing ex scroll_id:`{self.scroll_id}`")
+            self.scroll_id = None
+
+        data: EsResults = self.es_connection.search(index=es_index,
+                                                    body=es_search_body,
+                                                    _source=es_source_list,
+                                                    size=es_search_size,
+                                                    scroll=es_scroll_time)
+
+        self.scroll_id = self._extract_scroll_id(data)
+        n_res = len(data['hits']['hits'])
+        if n_res == 0:
+            return None
+
+        return data
+
+    def scroll_search(self,
+                      es_scroll_time: str = "5m"
+                      ) -> Optional[EsResults]:
+        """
+        Call this function **after** `new_search` function.
+
+        Return further X data from the search query, or None if no new data are retrieved.
+        Where X is the `es_search_size` value passed at the `new_search` function.
+        Args:
+            es_scroll_time: timing for the scroll_id expiration.
+            After this time you cannot scroll new results.
+
+        Returns:
+            None if no new data are found, or a dictionary with `EsResults` format
+        """
+        if not self.scroll_id:
+            raise RuntimeError("Cannot scroll new data, `scroll_id` not set.")
+
+        data = self._scroll_other_data(es_scroll_time)
+        n_res = len(data['hits']['hits'])
+
+        if n_res == 0:
+            return None
+        return data
 
     def bulk_upload(self, actions: List[dict], **args):
         """

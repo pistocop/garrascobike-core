@@ -973,7 +973,9 @@ dmypy.json
 cython_debug/
 
 # Personal
-!data/dataset/.gitkeep
-!data/extractions/.gitkeep
+!data/entities_extractions/.gitkeep
+!data/recommendations_data/presence_dataset/.gitkeep
+!data/subreddit_extractions/.gitkeep
+
 data/*
 *.parquet

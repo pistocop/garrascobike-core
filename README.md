@@ -14,13 +14,16 @@
 - [ ] Reorder /core/ scripts under different folders
 - [ ] Info logging system: print the main 3 phases [init / processing / storing]
     - [ ] Log running stats
-- [ x ] Use library for pandas CPU parallelism
     - Not required: preprocessing is already really fast
 - [ ] We should improve the text parsing?
     - [ ] Refactory: manage both parsing and entities extraction in one file script could be a risk
 - [ ] How manage the connection between models and requirements.txt?
     - [ ] Support multiple languages
-        - [ ] We need to manage multiple installation for multiple models
+    - [ ] We need to manage multiple installation for multiple models
+- [  ] Create Elasticsearch indexes creation
+    - [  ] Use ES templates
+- [  ] "03_matrix_builder.py" Fetch and store only entities required from elasticsearch
+- [ x ] Use library for pandas CPU parallelism
 - [ x ] Log if GPU is attached
 
 # Links
