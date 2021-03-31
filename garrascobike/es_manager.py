@@ -120,7 +120,7 @@ class ElasticManager:
         return res
 
     def new_search(self,
-                   es_index: str,
+                   es_index_list: List[str],
                    es_search_body: str,
                    es_search_size: int,
                    es_source_list: List[str] = None,
@@ -131,7 +131,7 @@ class ElasticManager:
             logger.debug(f"Overwriting last search, removing ex scroll_id:`{self.scroll_id}`")
             self.scroll_id = None
 
-        data: EsResults = self.es_connection.search(index=es_index,
+        data: EsResults = self.es_connection.search(index=es_index_list,
                                                     body=es_search_body,
                                                     _source=es_source_list,
                                                     size=es_search_size,

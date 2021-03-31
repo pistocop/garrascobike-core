@@ -24,10 +24,10 @@ class HelpMsg:
     debug = "Show debug logs"
 
 
-def extract(csv_path: str = Option("./data/data.csv", help=HelpMsg.csv_path),
+def extract(csv_path: str = Option("./data/subreddit_extractions/data.csv", help=HelpMsg.csv_path),
             text_columns: List[str] = Option(["title", "selftext"], help=HelpMsg.text_columns),
             use_transformers: bool = Option(False, help=HelpMsg.use_transformers),
-            output_directory: str = Option("./data/", help=HelpMsg.output_directory),
+            output_directory: str = Option("./data/entities_extractions/", help=HelpMsg.output_directory),
             use_gpu: bool = Option(False, help=HelpMsg.use_gpu),
             language: SupportedLanguages = Option("en", help=HelpMsg.language),
             debug: bool = Option(False, help=HelpMsg.debug),

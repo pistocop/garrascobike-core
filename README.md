@@ -2,10 +2,20 @@
 
 > Core of the Garrascobike recommendation system
 
-## Entities extraction
+## Useful info
+
+### Entities extraction
 
 - Store the entities in `parquet` for better compatibility with future
   uses [source](https://pandas-docs.github.io/pandas-docs-travis/user_guide/io.html#performance-considerations)
+
+### Correlation extraction
+
+- Optimize memory usage with elasticsearch `_source`:
+    - size products_list no _source: `289805320`
+    - size products_list with _source: `29423384` (89% memory saved)
+    - Memory size measured
+      with [this approach](https://stackoverflow.com/questions/13530762/how-to-know-bytes-size-of-python-object-like-arrays-and-dictionaries-the-simp))
 
 # 💤 TODO
 

@@ -974,7 +974,7 @@ cython_debug/
 
 # Personal
 !data/entities_extractions/.gitkeep
-!data/recommendations_data/presence_dataset/.gitkeep
+!data/correlation_data/presence_dataset/.gitkeep
 !data/subreddit_extractions/.gitkeep
 
 data/*

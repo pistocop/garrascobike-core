@@ -22,7 +22,7 @@ class HelpMsg:
 def extract(es_index: str = Option(..., help=HelpMsg.es_index),
             es_host: str = Option("localhost", help=HelpMsg.es_host),
             es_port: str = Option("9200", help=HelpMsg.es_port),
-            input_file: str = Option("./data/extractions/extraction.parquet", help=HelpMsg.input_file),
+            input_file: str = Option("./data/entities_extractions/extraction.parquet", help=HelpMsg.input_file),
             debug: bool = Option(False, help=HelpMsg.debug),
             ):
     if not debug:
