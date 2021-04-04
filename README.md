@@ -11,7 +11,7 @@
 
 ### Correlation extraction
 
-- Optimize memory usage with elasticsearch `_source`:
+- Optimize memory usage limiting the number of fields retrieved from elasticsearch with `_source`:
     - size products_list no _source: `289805320`
     - size products_list with _source: `29423384` (89% memory saved)
     - Memory size measured
@@ -19,22 +19,22 @@
 
 # 💤 TODO
 
-- [ ] [!] Store dataset info, both _subreddit-dl_ and _entities_extraction.py_
 - [ ] Can we speed up entities extractions with batch approach?
-- [ ] Reorder /core/ scripts under different folders
-- [ ] Info logging system: print the main 3 phases [init / processing / storing]
-    - [ ] Log running stats
-    - Not required: preprocessing is already really fast
-- [ ] We should improve the text parsing?
-    - [ ] Refactory: manage both parsing and entities extraction in one file script could be a risk
-- [ ] How manage the connection between models and requirements.txt?
+- [ ] How manage the connection between spacy models and requirements.txt?
     - [ ] Support multiple languages
     - [ ] We need to manage multiple installation for multiple models
-- [  ] Create Elasticsearch indexes creation
+- [  ] Report the Elasticsearch indexes creation sources
     - [  ] Use ES templates
-- [  ] "03_matrix_builder.py" Fetch and store only entities required from elasticsearch
+- [ ] Store dataset info, both _subreddit-dl_ and _entities_extraction.py_
+- [ x ] "03_matrix_builder.py" Fetch and store only entities required from elasticsearch
+- [ x ] Reorder /core/ scripts under different folders
 - [ x ] Use library for pandas CPU parallelism
 - [ x ] Log if GPU is attached
+- [ x ] We should improve the text parsing?
+    - [ x] Refactory: manage both parsing and entities extraction in one file script could be a risk
+- [ x ] Info logging system: print the main 3 phases [init / processing / storing]
+  - [ x ] Log running stats
+  - Not required: preprocessing is already really fast
 
 # Links
 

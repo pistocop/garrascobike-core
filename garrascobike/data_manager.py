@@ -1,13 +1,12 @@
 import os
-
-import numpy as np
-import pandas as pd
-
 from datetime import datetime
 from os.path import join
 from pathlib import Path
-from typing import List
 from typing import Callable
+from typing import List
+
+import numpy as np
+import pandas as pd
 from loguru import logger
 from tqdm import tqdm
 
@@ -68,7 +67,6 @@ class DataManager:
         return self.df
 
     def store_dataframe(self, path: str, out_extension: str = "parquet") -> str:
-        # TODO: code refactory
         run_id = datetime.today().strftime('%Y%m%d%H%M%S')
         runtime_dir = join(path, run_id)
         Path(runtime_dir).mkdir(parents=True, exist_ok=True)
@@ -134,9 +132,3 @@ class DataManager:
 
     def entities_extraction(self, extraction_fn: Callable[[str], List[dict]]):
         self.df["entities"] = self.df[self.__text__].progress_apply(extraction_fn)
-
-
-def basic_text_cleaning(text: str) -> str:
-    # TODO move to another dedicated module
-    text = text.replace("\\n", "")
-    return text

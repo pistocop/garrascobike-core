@@ -1,11 +1,12 @@
 import json
-import pandas as pd
-
-from typing import List, Optional
+from typing import List
+from typing import Optional
 from typing import TypedDict
-from loguru import logger
+
+import pandas as pd
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
+from loguru import logger
 
 
 class EsResults(TypedDict):
@@ -126,7 +127,21 @@ class ElasticManager:
                    es_source_list: List[str] = None,
                    es_scroll_time: str = "5m"
                    ) -> Optional[EsResults]:
-        # TODO documentation
+        """
+        Make a new search to elasticsearch. For fetch all the results use "scroll_search" function
+        after have call this method.
+
+        If a previous search was done this call overwrite the possibility to scroll for new data for the old query.
+        Args:
+            es_index_list: the elasticsearch index to query
+            es_search_body: body of the query
+            es_search_size: number of results to return, use "scroll_search" to fetch more
+            es_source_list: name of the entries arguments to select for the result (like SELECT for sql)
+            es_scroll_time: living time of the query results, after this time is elapsed "scroll_search" can't fetch new data
+
+        Returns:
+            Elasticsearch result for the query, in a elastic search format. Use "extract_search_data" method to refine the results
+        """
         if self.scroll_id:
             logger.debug(f"Overwriting last search, removing ex scroll_id:`{self.scroll_id}`")
             self.scroll_id = None

@@ -1,17 +1,16 @@
-# noinspection PyUnresolvedReferences
-import __init__  # used to import from `garrascobike`
-
 import sys
-import typer
-
-from typer import Option
-from loguru import logger
 from typing import List
 
+import typer
+from loguru import logger
+from typer import Option
+
+# noinspection PyUnresolvedReferences
+import __init__  # used to import from `garrascobike`
 from data_manager import DataManager
-from data_manager import basic_text_cleaning
-from spacy_manager import SupportedLanguages
+from text_parsers import basic_text_cleaning
 from spacy_manager import SpacyManager
+from spacy_manager import SupportedLanguages
 
 
 class HelpMsg:

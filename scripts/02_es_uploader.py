@@ -1,12 +1,11 @@
+import sys
+
+import typer
+from loguru import logger
+from typer import Option
+
 # noinspection PyUnresolvedReferences
 import __init__  # used to import from `garrascobike`
-
-import sys
-import typer
-
-from typer import Option
-from loguru import logger
-
 from data_manager import DataManager
 from es_manager import ElasticManager
 

@@ -1,7 +1,7 @@
-import spacy
-
 from enum import Enum
 from typing import List
+
+import spacy
 from spacy import Language
 
 
