@@ -11,7 +11,7 @@ import typer
 from loguru import logger
 from typer import Option
 
-from es_manager import ElasticManager
+from managers.es_manager import ElasticManager
 
 
 class Entities(TypedDict):
@@ -34,7 +34,7 @@ def main(es_host: str = Option("localhost"),
          es_port: str = Option("9200"),
          es_index_list: List[str] = Option(["reddit-comments", "reddit-submissions"]),
          es_search_size: int = Option(512),
-         output_path: str = Option("./data/correlation_data/presence_dataset/"),
+         output_path: str = Option("./data/03_correlation_data/presence_dataset/"),
          debug: bool = Option(False),
          ):
     # Init

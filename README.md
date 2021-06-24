@@ -2,12 +2,19 @@
 
 > Core of the Garrascobike recommendation system
 
-## Useful info
+## Intro
+
+- Use this package to create the recommendation model used for the garrascobike project.<br>
+- Folders structure:
+    - `./garrascobike/` - folder there are all the python scripts that you should run consequentially.
+    - `./notebooks/` - Jupyter notebooks used to explore the data, validate the hypothesis or test ML models
+
+## Functionalities
 
 ### Entities extraction
 
-- Store the entities in `parquet` for better compatibility with future
-  uses [source](https://pandas-docs.github.io/pandas-docs-travis/user_guide/io.html#performance-considerations)
+- Store the entities in `parquet` for better compatibility with future uses
+    - [source](https://pandas-docs.github.io/pandas-docs-travis/user_guide/io.html#performance-considerations)
 
 ### Correlation extraction
 
@@ -33,8 +40,8 @@
 - [ x ] We should improve the text parsing?
     - [ x] Refactory: manage both parsing and entities extraction in one file script could be a risk
 - [ x ] Info logging system: print the main 3 phases [init / processing / storing]
-  - [ x ] Log running stats
-  - Not required: preprocessing is already really fast
+    - [ x ] Log running stats
+    - Not required: preprocessing is already really fast
 
 # Links
 

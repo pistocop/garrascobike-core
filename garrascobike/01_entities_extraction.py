@@ -7,10 +7,10 @@ from typer import Option
 
 # noinspection PyUnresolvedReferences
 import __init__  # used to import from `garrascobike`
-from data_manager import DataManager
-from text_parsers import basic_text_cleaning
-from spacy_manager import SpacyManager
-from spacy_manager import SupportedLanguages
+from managers.data_manager import DataManager
+from utils.text_parsers import basic_text_cleaning
+from managers.spacy_manager import SpacyManager
+from managers.spacy_manager import SupportedLanguages
 
 
 class HelpMsg:
@@ -23,10 +23,10 @@ class HelpMsg:
     debug = "Show debug logs"
 
 
-def extract(csv_path: str = Option("./data/subreddit_extractions/data.csv", help=HelpMsg.csv_path),
+def extract(csv_path: str = Option("./data/01_subreddit_extractions/data.csv", help=HelpMsg.csv_path),
             text_columns: List[str] = Option(["title", "selftext"], help=HelpMsg.text_columns),
             use_transformers: bool = Option(False, help=HelpMsg.use_transformers),
-            output_directory: str = Option("./data/entities_extractions/", help=HelpMsg.output_directory),
+            output_directory: str = Option("./data/02_entities_extractions/", help=HelpMsg.output_directory),
             use_gpu: bool = Option(False, help=HelpMsg.use_gpu),
             language: SupportedLanguages = Option("en", help=HelpMsg.language),
             debug: bool = Option(False, help=HelpMsg.debug),
