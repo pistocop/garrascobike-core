@@ -15,7 +15,8 @@ class DataManager:
 
     def __init__(self,
                  file_path: str,
-                 working_col="__text__"):
+                 working_col="__text__",
+                 working_col_init=True):
         """
         Used to load, aggregate and parse the data.
 
@@ -39,7 +40,8 @@ class DataManager:
         self.__text__ = working_col
         self.file_path = file_path
         self.df = self._load_dataframe(file_path)
-        self.df[self.__text__] = ""
+        if working_col_init:
+            self.df[self.__text__] = ""
         self.df_len = len(self.df)
         self.columns_joined_flag = False
 
@@ -129,6 +131,24 @@ class DataManager:
 
     def text_parsing(self, fn_cleaning: Callable[[str], str]):
         self.df[self.__text__] = self.df[self.__text__].apply(fn_cleaning)
+
+    def text_normalization(self):
+        self.df[self.__text__] = self.df[self.__text__].str.casefold()
+        self.df[self.__text__] = self.df[self.__text__].str.strip()
+
+    def text_remove_if_all_numbers(self):
+        def has_numbers(input_string: str):
+            return all(char.isdigit() for char in input_string)
+
+        self.df['text_all_digits'] = self.df[self.__text__].apply(has_numbers)
+        self.df = self.df[self.df["text_all_digits"] == False]
+        self.df = self.df.drop("text_all_digits", 1)
+
+    def text_remove_if_n_words(self, n_words: 2):
+        """
+        Remove rows if the text is composed by more than `n_words` words
+        """
+        self.df = self.df[self.df[self.__text__].str.split().str.len().lt(n_words)]
 
     def entities_extraction(self, extraction_fn: Callable[[str], List[dict]]):
         self.df["entities"] = self.df[self.__text__].progress_apply(extraction_fn)

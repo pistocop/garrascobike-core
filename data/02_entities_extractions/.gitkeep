@@ -1,1 +1,1 @@
-# Folder where store the dataset with entities (extraction.parquet) extracted from `entities_extraction.py`
+# Folder where store the dataset with entities (extraction.parquet) extracted from `01_entities_extraction.py`
