@@ -13,8 +13,7 @@
 
 ### Entities extraction
 
-- Store the entities in `parquet` for better compatibility with future uses
-    - [source](https://pandas-docs.github.io/pandas-docs-travis/user_guide/io.html#performance-considerations)
+- Store the entities in `parquet` for better compatibility with future uses - [source](https://pandas-docs.github.io/pandas-docs-travis/user_guide/io.html#performance-considerations)
 
 ### Correlation extraction
 
@@ -30,17 +29,17 @@
 - [ ] How manage the connection between spacy models and requirements.txt?
     - [ ] Support multiple languages
     - [ ] We need to manage multiple installation for multiple models
-- [  ] Report the Elasticsearch indexes creation sources
-    - [  ] Use ES templates
+- [ ] Report the Elasticsearch indexes creation sources
+    - [ ] Use ES templates
 - [ ] Store dataset info, both _subreddit-dl_ and _entities_extraction.py_
-- [ x ] "03_matrix_builder.py" Fetch and store only entities required from elasticsearch
-- [ x ] Reorder /core/ scripts under different folders
-- [ x ] Use library for pandas CPU parallelism
-- [ x ] Log if GPU is attached
-- [ x ] We should improve the text parsing?
-    - [ x] Refactory: manage both parsing and entities extraction in one file script could be a risk
-- [ x ] Info logging system: print the main 3 phases [init / processing / storing]
-    - [ x ] Log running stats
+- [x] "03_matrix_builder.py" Fetch and store only entities required from elasticsearch
+- [x] Reorder /core/ scripts under different folders
+- [x] Use library for pandas CPU parallelism
+- [x] Log if GPU is attached
+- [x] We should improve the text parsing?
+    - [x] Refactory: manage both parsing and entities extraction in one file script could be a risk
+- [x] Info logging system: print the main 3 phases [init / processing / storing]
+    - [x] Log running stats
     - Not required: preprocessing is already really fast
 
 # Links
