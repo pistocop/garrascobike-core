@@ -7,6 +7,7 @@
 - Use this package to create the recommendation model used for the garrascobike project.<br>
 - Folders structure:
     - `./garrascobike/` - folder with all the python scripts that you should run consequentially to analyze the text and build a recommendation model
+      - Python version: `python 3.8.5`
     - `./notebooks/` - Jupyter notebooks used to explore the data, validate the hypothesis or test ML models
 
 ## Architecture
@@ -31,6 +32,7 @@
 **Functionalities**
 - Take the entities of type `PRODUCT` from ES
 - Group the entities by `submission_id` (the Reddit thread to which the comment belong)
+- Build a matrix of dimension `len(threads_unique) x len(products_unique)`
 - Train a `NearestNeighbors` model to make the recommendations
 - Store the ML model
 
@@ -47,7 +49,7 @@
 - Optimize memory usage limiting the number of fields retrieved from elasticsearch with `_source`:
     - size `products_list` no `_source`: `289805320`
     - size `products_list` with `_source`: `29423384` (89% memory saved)
-    - Memory size measured with [this approach](https://stackoverflow.com/questions/13530762/how-to-know-bytes-size-of-python-object-like-arrays-and-dictionaries-the-simp))
+    - Memory size measured with [this approach](https://stackoverflow.com/questions/13530762/how-to-know-bytes-size-of-python-object-like-arrays-and-dictionaries-the-simp)
 
 
 ## 💤 TODO
@@ -57,7 +59,6 @@
     - [ ] Support multiple languages
     - [ ] We need to manage multiple installation for multiple models
 - [ ] Report the Elasticsearch indexes creation sources
-    - [ ] Use ES templates
 - [ ] Store dataset info, both _subreddit-dl_ and _entities_extraction.py_
 
 
