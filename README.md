@@ -21,6 +21,7 @@
 - Take the subreddit comments in input
 - Extract the entities using unsupervised ML model with the [Spacy](https://spacy.io/) library
   - Is suggested to run this code on [Colab](https://colab.research.google.com/) to speed up the ML process using GPU
+  - Tip: use the following Colab notebook to extract the entities: [notebook](https://colab.research.google.com/drive/19sxpM4cjWAflmCW4V5akyGd60VRUa1AC?usp=sharing)
 - Store the comment's entities on parquet file
 - Load the entities from parquet file to Elasticsearch (ES) instance
   - How run ES locally: docker setup [guide](https://www.pistocop.dev/posts/es_engineer_exam_notes/#run-es-locally-docker-setup)
